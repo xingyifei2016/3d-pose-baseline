@@ -56,7 +56,7 @@ SH_NAMES[13] = 'LShoulder'
 SH_NAMES[14] = 'LElbow'
 SH_NAMES[15] = 'LWrist'
 
-def load_new_data( dpath, names, take_2d ):
+def load_new_data( names, dpath, take_2d ):
   """
 
   Args
@@ -67,11 +67,11 @@ def load_new_data( dpath, names, take_2d ):
     data: Dictionary with keys=(subject, action, imagename)
       values v=(32*{2 or 3}) matrix 
   """
-
+  import time
+  start = time.time()
+  print("#####LOADING "+str("2d Prediction" if take_2d else "3d Ground Truth")+" Data#####")
   # GET KEY VALUE TUPLE
   nameFile = list(open(names, "r"))
-  from pdb import set_trace as st 
-  st()
   keys = zip([o[1:].split('_')[0] for o in nameFile], [o[1:].split('_')[1] for o in nameFile], [o[:-2] for o in nameFile])
 
   # GET VALUE ARRAYS
@@ -85,7 +85,8 @@ def load_new_data( dpath, names, take_2d ):
   data = {}
   for (key, value) in zip(keys, values):
     data[key]=value
-
+  end = time.time()
+  print("#####LOADING PROCESS TOOK "+str(int(end-start))+" seconds#####")
   return data
 
 
