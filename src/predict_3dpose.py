@@ -157,7 +157,7 @@ def train():
   else:
     train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', rcams )
   print( "done reading and normalizing data." )
-  
+
   # Avoid using the GPU if requested
   device_count = {"GPU": 0} if FLAGS.use_cpu else {"GPU": 1}
   with tf.Session(config=tf.ConfigProto(
@@ -344,19 +344,12 @@ def evaluate_batches( sess, model,
     step_loss, loss_summary, poses3d = model.step( sess, enc_in, dec_out, dp, isTraining=False )
     loss += step_loss
 
-    from pdb import set_trace as st
-    st()
 
     # denormalize
     enc_in  = data_utils.unNormalizeData( enc_in,  data_mean_2d, data_std_2d, dim_to_ignore_2d )
     dec_out = data_utils.unNormalizeData( dec_out, data_mean_3d, data_std_3d, dim_to_ignore_3d )
     poses3d = data_utils.unNormalizeData( poses3d, data_mean_3d, data_std_3d, dim_to_ignore_3d )
 
-    # Keep only the relevant dimensions
-    dtu3d = np.hstack( (np.arange(3), dim_to_use_3d) ) if not(FLAGS.predict_14) else  dim_to_use_3d
-
-    dec_out = dec_out[:, dtu3d]
-    poses3d = poses3d[:, dtu3d]
 
     assert dec_out.shape[0] == FLAGS.batch_size
     assert poses3d.shape[0] == FLAGS.batch_size
