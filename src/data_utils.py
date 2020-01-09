@@ -451,9 +451,6 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
   train_set = load_new_data( train_names, train_dir, 1 )
   test_set  = load_new_data( val_names, val_dir, 1 )
 
-  train_set = project_to_cameras( train_set, rcams )
-  test_set  = project_to_cameras( test_set, rcams )
-
   # Compute normalization statistics.
   complete_train = copy.deepcopy( np.vstack( train_set.values() ))
   data_mean, data_std, dim_to_ignore, dim_to_use = normalization_stats( complete_train, dim=2 )
