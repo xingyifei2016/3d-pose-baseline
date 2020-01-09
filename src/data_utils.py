@@ -284,7 +284,7 @@ def transform_world_to_camera(poses_set, cams, ncams=4 ):
         from pdb import set_trace as st 
         st()
         camera_coord = cameras.world_to_camera_frame( np.reshape(t3d_world, [-1, 3]), R, T)
-        camera_coord = np.reshape( camera_coord, [-1, len(H36M_NAMES)*3] )
+        camera_coord = np.reshape( camera_coord, [-1, 17*3] )
 
         sname = seqname 
         t3d_camera[ (subj, action, sname) ] = camera_coord
@@ -392,7 +392,7 @@ def project_to_cameras( poses_set, cams, ncams=4 ):
       R, T, f, c, k, p, name = cams[ (subj, cam+1) ]
       pts2d, _, _, _, _ = cameras.project_point_radial( np.reshape(t3d, [-1, 3]), R, T, f, c, k, p )
 
-      pts2d = np.reshape( pts2d, [-1, len(H36M_NAMES)*2] )
+      pts2d = np.reshape( pts2d, [-1, 17*2] )
       sname = seqname 
       t2d[ (subj, a, sname) ] = pts2d
 
