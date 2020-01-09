@@ -76,7 +76,7 @@ def load_new_data( names, dpath, take_2d ):
 
   # GET VALUE ARRAYS
   data_file = h5py.File( dpath, 'r' )
-  if take_2d == 0:
+  if take_2d == 3:
     print("LOADING STACKED HOURGLASS 2D PREDICTIONS")
     values = np.reshape(data_file['P2d'], [-1, 16*2])
   if take_2d == 1:
@@ -417,8 +417,8 @@ def read_2d_predictions( actions, train_names, val_names, train_dir, val_dir ):
     dim_to_use: list with the dimensions to predict
   """
 
-  train_set = load_new_data( train_names, train_dir, 0 )
-  test_set  = load_new_data( val_names, val_dir, 0 )
+  train_set = load_new_data( train_names, train_dir, 3 )
+  test_set  = load_new_data( val_names, val_dir, 3 )
 
   complete_train = copy.deepcopy( np.vstack( train_set.values() ))
   data_mean, data_std,  dim_to_ignore, dim_to_use = normalization_stats( complete_train, dim=2 )
