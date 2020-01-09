@@ -70,6 +70,8 @@ def load_new_data( dpath, names, take_2d ):
 
   # GET KEY VALUE TUPLE
   nameFile = list(open(names, "r"))
+  from pdb import set_trace as st 
+  st()
   keys = zip([o[1:].split('_')[0] for o in nameFile], [o[1:].split('_')[1] for o in nameFile], [o[:-2] for o in nameFile])
 
   # GET VALUE ARRAYS
