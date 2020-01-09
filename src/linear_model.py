@@ -254,10 +254,7 @@ class LinearModel(object):
     # Figure out how many frames we have
     from pdb import set_trace as st
     st()
-    n = 0
-    for key2d in data_x.keys():
-      n2d, _ = data_x[ key2d ].shape
-      n = n + n2d
+    n = len(data_x.keys())
 
     encoder_inputs  = np.zeros((n, self.input_size), dtype=float)
     decoder_outputs = np.zeros((n, self.output_size), dtype=float)
@@ -268,11 +265,9 @@ class LinearModel(object):
       (subj, b, fname) = key2d
       # keys should be the same if 3d is in camera coordinates
       key3d = key2d 
-
-      n2d, _ = data_x[ key2d ].shape
-      encoder_inputs[idx:idx+n2d, :]  = data_x[ key2d ]
-      decoder_outputs[idx:idx+n2d, :] = data_y[ key3d ]
-      idx = idx + n2d
+      encoder_inputs[idx, :]  = data_x[ key2d ]
+      decoder_outputs[idx, :] = data_y[ key3d ]
+      idx += 1
 
 
     if training:
