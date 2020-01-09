@@ -157,10 +157,7 @@ def train():
   else:
     train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', rcams )
   print( "done reading and normalizing data." )
-
-  from pdb import set_trace as st 
-  st()
-
+  
   # Avoid using the GPU if requested
   device_count = {"GPU": 0} if FLAGS.use_cpu else {"GPU": 1}
   with tf.Session(config=tf.ConfigProto(
