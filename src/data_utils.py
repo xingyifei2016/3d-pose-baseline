@@ -520,7 +520,7 @@ def postprocess_3d( poses_set ):
 
     # Remove the root from the 3d position
     poses = poses_set[k]
-    poses = poses - np.tile( poses[:,:3], [1, 17] )
+    poses = poses - np.tile( poses[:,:3], [1, 16] )
     poses_set[k] = poses
 
   return poses_set, root_positions
