@@ -347,6 +347,9 @@ def evaluate_batches( sess, model,
     step_loss, loss_summary, poses3d = model.step( sess, enc_in, dec_out, dp, isTraining=False )
     loss += step_loss
 
+    from pdb import set_trace as st
+    st()
+
     # denormalize
     enc_in  = data_utils.unNormalizeData( enc_in,  data_mean_2d, data_std_2d, dim_to_ignore_2d )
     dec_out = data_utils.unNormalizeData( dec_out, data_mean_3d, data_std_3d, dim_to_ignore_3d )
