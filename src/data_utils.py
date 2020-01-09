@@ -281,6 +281,8 @@ def transform_world_to_camera(poses_set, cams, ncams=4 ):
 
       for c in range( ncams ):
         R, T, f, c, k, p, name = cams[ (int(subj), c+1) ]
+        from pdb import set_trace as st 
+        st()
         camera_coord = cameras.world_to_camera_frame( np.reshape(t3d_world, [-1, 3]), R, T)
         camera_coord = np.reshape( camera_coord, [-1, len(H36M_NAMES)*3] )
 
