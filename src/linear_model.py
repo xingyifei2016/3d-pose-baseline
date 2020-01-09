@@ -252,8 +252,6 @@ class LinearModel(object):
     """
 
     # Figure out how many frames we have
-    from pdb import set_trace as st
-    st()
     n = len(data_x.keys())
 
     encoder_inputs  = np.zeros((n, self.input_size), dtype=float)
