@@ -305,8 +305,8 @@ def normalize_data(data, data_mean, data_std, dim_to_use ):
   data_out = {}
 
   for key in data.keys():
-    mu = data_mean[dim_to_use]
-    stddev = data_std[dim_to_use]
+    mu = data_mean
+    stddev = data_std
     data_out[ key ] = np.divide( (data[key] - mu), stddev )
 
   return data_out
