@@ -252,6 +252,8 @@ class LinearModel(object):
     """
 
     # Figure out how many frames we have
+    from pdb import set_trace as st
+    st()
     n = 0
     for key2d in data_x.keys():
       n2d, _ = data_x[ key2d ].shape
