@@ -77,9 +77,9 @@ def load_new_data( names, dpath, take_2d ):
   # GET VALUE ARRAYS
   data_file = h5py.File( dpath, 'r' )
   if take_2d:
-    values = data_file['P2d']
+    values = np.reshape(data_file['P2d'], [-1, 16*2])
   else:
-    values = data_file['GT3d']
+    values = np.reshape(data_file['GT3d'], [-1, 17*3])
 
   # GET FINAL DICTIONARY
   data = {}
