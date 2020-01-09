@@ -305,7 +305,6 @@ def normalize_data(data, data_mean, data_std, dim_to_use ):
   data_out = {}
 
   for key in data.keys():
-    data[ key ] = data[ key ][ :, dim_to_use ]
     mu = data_mean[dim_to_use]
     stddev = data_std[dim_to_use]
     data_out[ key ] = np.divide( (data[key] - mu), stddev )
@@ -333,7 +332,7 @@ def unNormalizeData(normalized_data, data_mean, data_std, dimensions_to_ignore):
   dimensions_to_use = np.array([dim for dim in range(D)
                                 if dim not in dimensions_to_ignore])
 
-  orig_data[:, dimensions_to_use] = normalized_data
+  orig_data = normalized_data
 
   # Multiply times stdev and add the mean
   stdMat = data_std.reshape((1, D))
