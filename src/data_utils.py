@@ -56,6 +56,38 @@ SH_NAMES[13] = 'LShoulder'
 SH_NAMES[14] = 'LElbow'
 SH_NAMES[15] = 'LWrist'
 
+def load_new_data( dpath, names, take_2d ):
+  """
+
+  Args
+    dpath: h5 file path to data
+    names: txt file of image names
+
+  Returns 
+    data: Dictionary with keys=(subject, action, imagename)
+      values v=(32*{2 or 3}) matrix 
+  """
+
+  # GET KEY VALUE TUPLE
+  nameFile = list(open(names, "r"))
+  keys = zip([o[1:].split('_')[0] for o in nameFile], [o[1:].split('_')[1] for o in nameFile], [o[:-2] for o in nameFile])
+
+  # GET VALUE ARRAYS
+  data_file = h5py.File( dpath, 'r' )
+  if take_2d:
+    values = data_file['P2d']
+  else:
+    values = data_file['GT3d']
+
+  # GET FINAL DICTIONARY
+  data = {}
+  for (key, value) in zip(keys, values):
+    data[key]=value
+
+  return data
+
+
+
 def load_data( bpath, subjects, actions, dim=3 ):
   """
   Loads 2d ground truth from disk, and puts it in an easy-to-acess dictionary
@@ -249,7 +281,7 @@ def transform_world_to_camera(poses_set, cams, ncams=4 ):
         camera_coord = cameras.world_to_camera_frame( np.reshape(t3d_world, [-1, 3]), R, T)
         camera_coord = np.reshape( camera_coord, [-1, len(H36M_NAMES)*3] )
 
-        sname = seqname[:-3]+"."+name+".h5" # e.g.: Waiting 1.58860488.h5
+        sname = seqname 
         t3d_camera[ (subj, action, sname) ] = camera_coord
 
     return t3d_camera
@@ -356,13 +388,13 @@ def project_to_cameras( poses_set, cams, ncams=4 ):
       pts2d, _, _, _, _ = cameras.project_point_radial( np.reshape(t3d, [-1, 3]), R, T, f, c, k, p )
 
       pts2d = np.reshape( pts2d, [-1, len(H36M_NAMES)*2] )
-      sname = seqname[:-3]+"."+name+".h5" # e.g.: Waiting 1.58860488.h5
+      sname = seqname 
       t2d[ (subj, a, sname) ] = pts2d
 
   return t2d
 
 
-def read_2d_predictions( actions, data_dir ):
+def read_2d_predictions( actions, train_names, val_names, train_dir, val_dir ):
   """
   Loads 2d data from precomputed Stacked Hourglass detections
 
@@ -378,8 +410,8 @@ def read_2d_predictions( actions, data_dir ):
     dim_to_use: list with the dimensions to predict
   """
 
-  train_set = load_stacked_hourglass( data_dir, TRAIN_SUBJECTS, actions)
-  test_set  = load_stacked_hourglass( data_dir, TEST_SUBJECTS,  actions)
+  train_set = load_new_data( train_names, train_path, True )
+  test_set  = load_new_data( val_names, val_path, True )
 
   complete_train = copy.deepcopy( np.vstack( train_set.values() ))
   data_mean, data_std,  dim_to_ignore, dim_to_use = normalization_stats( complete_train, dim=2 )
@@ -390,7 +422,7 @@ def read_2d_predictions( actions, data_dir ):
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
 
-def create_2d_data( actions, data_dir, rcams ):
+def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams ):
   """
   Creates 2d poses by projecting 3d poses with the corresponding camera
   parameters. Also normalizes the 2d poses
@@ -409,8 +441,8 @@ def create_2d_data( actions, data_dir, rcams ):
   """
 
   # Load 3d data
-  train_set = load_data( data_dir, TRAIN_SUBJECTS, actions, dim=3 )
-  test_set  = load_data( data_dir, TEST_SUBJECTS,  actions, dim=3 )
+  train_set = load_new_data( train_names, train_path, False )
+  test_set  = load_new_data( val_names, val_path, False )
 
   train_set = project_to_cameras( train_set, rcams )
   test_set  = project_to_cameras( test_set, rcams )
@@ -426,7 +458,7 @@ def create_2d_data( actions, data_dir, rcams ):
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
 
-def read_3d_data( actions, data_dir, camera_frame, rcams, predict_14=False ):
+def read_3d_data( actions, train_names, val_names, train_dir, val_dir, camera_frame, rcams, predict_14=False ):
   """
   Loads 3d poses, zero-centres and normalizes them
 
@@ -447,8 +479,8 @@ def read_3d_data( actions, data_dir, camera_frame, rcams, predict_14=False ):
     test_root_positions: dictionary with the 3d positions of the root in test
   """
   # Load 3d data
-  train_set = load_data( data_dir, TRAIN_SUBJECTS, actions, dim=3 )
-  test_set  = load_data( data_dir, TEST_SUBJECTS,  actions, dim=3 )
+  train_set = load_new_data( train_names, train_path, False )
+  test_set  = load_new_data( val_names, val_path, False )
 
   if camera_frame:
     train_set = transform_world_to_camera( train_set, rcams )

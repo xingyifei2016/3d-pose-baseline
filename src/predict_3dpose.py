@@ -16,7 +16,8 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import procrustes
 
 import viz
@@ -47,8 +48,8 @@ tf.app.flags.DEFINE_boolean("procrustes", False, "Apply procrustes analysis at t
 tf.app.flags.DEFINE_boolean("evaluateActionWise",False, "The dataset to use either h36m or heva")
 
 # Directories
-tf.app.flags.DEFINE_string("cameras_path","data/h36m/cameras.h5","Directory to load camera parameters")
-tf.app.flags.DEFINE_string("data_dir",   "data/h36m/", "Data directory")
+tf.app.flags.DEFINE_string("cameras_path","/mnt/lustre/share/linjunyi/to_ptx/cameras.h5","Directory to load camera parameters")
+tf.app.flags.DEFINE_string("data_dir",   "/mnt/lustre/share/linjunyi/to_ptx/", "Data directory")
 tf.app.flags.DEFINE_string("train_dir", "experiments", "Training directory.")
 
 # Train or load
@@ -151,14 +152,17 @@ def train():
 
   # Load 3d data and load (or create) 2d projections
   train_set_3d, test_set_3d, data_mean_3d, data_std_3d, dim_to_ignore_3d, dim_to_use_3d, train_root_positions, test_root_positions = data_utils.read_3d_data(
-    actions, FLAGS.data_dir, FLAGS.camera_frame, rcams, FLAGS.predict_14 )
+    actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', FLAGS.camera_frame, rcams, FLAGS.predict_14 )
 
   # Read stacked hourglass 2D predictions if use_sh, otherwise use groundtruth 2D projections
   if FLAGS.use_sh:
-    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.read_2d_predictions(actions, FLAGS.data_dir)
+    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.read_2d_predictions(actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5')
   else:
-    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir, rcams )
+    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', rcams )
   print( "done reading and normalizing data." )
+
+  from pdb import set_trace as st 
+  st()
 
   # Avoid using the GPU if requested
   device_count = {"GPU": 0} if FLAGS.use_cpu else {"GPU": 1}
