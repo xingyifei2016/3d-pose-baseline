@@ -402,9 +402,9 @@ def sample():
     actions, FLAGS.data_dir, FLAGS.camera_frame, rcams, FLAGS.predict_14 )
 
   if FLAGS.use_sh:
-    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.read_2d_predictions(actions, FLAGS.data_dir)
+    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.read_2d_predictions(actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5')
   else:
-    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir, rcams )
+    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', rcams )
   print( "done reading and normalizing data." )
 
   device_count = {"GPU": 0} if FLAGS.use_cpu else {"GPU": 1}
@@ -421,18 +421,12 @@ def sample():
       print( "Subject: {}, action: {}, fname: {}".format(subj, b, fname) )
 
       # keys should be the same if 3d is in camera coordinates
-      key3d = key2d if FLAGS.camera_frame else (subj, b, '{0}.h5'.format(fname.split('.')[0]))
-      key3d = (subj, b, fname[:-3]) if (fname.endswith('-sh')) and FLAGS.camera_frame else key3d
+      key3d = key2d 
 
       enc_in  = test_set_2d[ key2d ]
-      n2d, _ = enc_in.shape
       dec_out = test_set_3d[ key3d ]
-      n3d, _ = dec_out.shape
-      assert n2d == n3d
 
       # Split into about-same-size batches
-      enc_in   = np.array_split( enc_in,  n2d // batch_size )
-      dec_out  = np.array_split( dec_out, n3d // batch_size )
       all_poses_3d = []
 
       for bidx in range( len(enc_in) ):

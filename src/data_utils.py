@@ -72,7 +72,7 @@ def load_new_data( names, dpath, take_2d ):
   print("#####LOADING "+str("2d Prediction" if take_2d else "3d Ground Truth")+" Data#####")
   # GET KEY VALUE TUPLE
   nameFile = list(open(names, "r"))
-  keys = zip([o[1:].split('_')[0] for o in nameFile], [o[1:].split('_')[1] for o in nameFile], [o[:-2] for o in nameFile])
+  keys = zip([int(o[1:].split('_')[0]) for o in nameFile], [o[1:].split('_')[1] for o in nameFile], [o[:-2] for o in nameFile])
 
   # GET VALUE ARRAYS
   data_file = h5py.File( dpath, 'r' )
