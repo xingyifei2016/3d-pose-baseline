@@ -263,6 +263,8 @@ class LinearModel(object):
       (subj, b, fname) = key2d
       # keys should be the same if 3d is in camera coordinates
       key3d = key2d 
+      from pdb import set_trace as st
+      st()
       encoder_inputs[idx, :]  = data_x[ key2d ]
       decoder_outputs[idx, :] = data_y[ key3d ]
       idx += 1

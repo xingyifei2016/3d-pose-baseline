@@ -426,6 +426,8 @@ def read_2d_predictions( actions, train_names, val_names, train_dir, val_dir ):
   train_set = normalize_data( train_set, data_mean, data_std, dim_to_use )
   test_set  = normalize_data( test_set,  data_mean, data_std, dim_to_use )
 
+  from pdb import set_trace as st 
+  st()
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
 
