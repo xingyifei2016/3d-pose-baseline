@@ -76,9 +76,14 @@ def load_new_data( names, dpath, take_2d ):
 
   # GET VALUE ARRAYS
   data_file = h5py.File( dpath, 'r' )
-  if take_2d:
+  if take_2d == 0:
+    print("LOADING STACKED HOURGLASS 2D PREDICTIONS")
     values = np.reshape(data_file['P2d'], [-1, 16*2])
+  if take_2d == 1:
+    print("LOADING GROUNDTRUTH 2D PREDICTIONS")
+    values = np.reshape(data_file['GT2d'], [-1, 16*2])
   else:
+    print("LOADING GROUNDTRUTH 3D COORDINATES")
     values = np.reshape(data_file['GT3d'], [-1, 17*3])
 
   # GET FINAL DICTIONARY
@@ -412,8 +417,8 @@ def read_2d_predictions( actions, train_names, val_names, train_dir, val_dir ):
     dim_to_use: list with the dimensions to predict
   """
 
-  train_set = load_new_data( train_names, train_dir, True )
-  test_set  = load_new_data( val_names, val_dir, True )
+  train_set = load_new_data( train_names, train_dir, 0 )
+  test_set  = load_new_data( val_names, val_dir, 0 )
 
   complete_train = copy.deepcopy( np.vstack( train_set.values() ))
   data_mean, data_std,  dim_to_ignore, dim_to_use = normalization_stats( complete_train, dim=2 )
@@ -443,8 +448,8 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
   """
 
   # Load 3d data
-  train_set = load_new_data( train_names, train_dir, False )
-  test_set  = load_new_data( val_names, val_dir, False )
+  train_set = load_new_data( train_names, train_dir, 1 )
+  test_set  = load_new_data( val_names, val_dir, 1 )
 
   train_set = project_to_cameras( train_set, rcams )
   test_set  = project_to_cameras( test_set, rcams )
@@ -481,8 +486,8 @@ def read_3d_data( actions, train_names, val_names, train_dir, val_dir, camera_fr
     test_root_positions: dictionary with the 3d positions of the root in test
   """
   # Load 3d data
-  train_set = load_new_data( train_names, train_dir, False )
-  test_set  = load_new_data( val_names, val_dir, False )
+  train_set = load_new_data( train_names, train_dir, 2 )
+  test_set  = load_new_data( val_names, val_dir, 2 )
 
   if camera_frame:
     train_set = transform_world_to_camera( train_set, rcams )
