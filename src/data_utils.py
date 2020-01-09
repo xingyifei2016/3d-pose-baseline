@@ -410,8 +410,8 @@ def read_2d_predictions( actions, train_names, val_names, train_dir, val_dir ):
     dim_to_use: list with the dimensions to predict
   """
 
-  train_set = load_new_data( train_names, train_path, True )
-  test_set  = load_new_data( val_names, val_path, True )
+  train_set = load_new_data( train_names, train_dir, True )
+  test_set  = load_new_data( val_names, val_dir, True )
 
   complete_train = copy.deepcopy( np.vstack( train_set.values() ))
   data_mean, data_std,  dim_to_ignore, dim_to_use = normalization_stats( complete_train, dim=2 )
@@ -441,8 +441,8 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
   """
 
   # Load 3d data
-  train_set = load_new_data( train_names, train_path, False )
-  test_set  = load_new_data( val_names, val_path, False )
+  train_set = load_new_data( train_names, train_dir, False )
+  test_set  = load_new_data( val_names, val_dir, False )
 
   train_set = project_to_cameras( train_set, rcams )
   test_set  = project_to_cameras( test_set, rcams )
@@ -479,8 +479,8 @@ def read_3d_data( actions, train_names, val_names, train_dir, val_dir, camera_fr
     test_root_positions: dictionary with the 3d positions of the root in test
   """
   # Load 3d data
-  train_set = load_new_data( train_names, train_path, False )
-  test_set  = load_new_data( val_names, val_path, False )
+  train_set = load_new_data( train_names, train_dir, False )
+  test_set  = load_new_data( val_names, val_dir, False )
 
   if camera_frame:
     train_set = transform_world_to_camera( train_set, rcams )
