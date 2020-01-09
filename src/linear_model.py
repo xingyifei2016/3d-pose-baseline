@@ -265,8 +265,7 @@ class LinearModel(object):
     for key2d in data_x.keys():
       (subj, b, fname) = key2d
       # keys should be the same if 3d is in camera coordinates
-      key3d = key2d if (camera_frame) else (subj, b, '{0}.h5'.format(fname.split('.')[0]))
-      key3d = (subj, b, fname[:-3]) if fname.endswith('-sh') and camera_frame else key3d
+      key3d = key2d 
 
       n2d, _ = data_x[ key2d ].shape
       encoder_inputs[idx:idx+n2d, :]  = data_x[ key2d ]
