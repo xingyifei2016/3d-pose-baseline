@@ -62,9 +62,9 @@ def markup():
   params = h5py.File('/mnt/lustre/xingyifei/to_ptx/train.h5', 'r')['GT2d'][0].astype(int)
   img_open = plt.imread('/mnt/lustre/xingyifei/to_ptx/images/'+img)
   img_open = img_open.copy()
-  
+
   for i in params:
-    img_open[i[0]][i[1]] = [255, 255, 0]
+    img_open[i[1]][i[0]] = [255, 255, 0]
     for j in [-1, 1]:
       for k in [-1, 1]:
         img_open[i[0]+j][i[1]+k] = [255, 255, 0]
