@@ -85,6 +85,7 @@ def markup_3dhp():
 
   for i in params:
     img_open[i[0]][i[1]] = [255, 255, 0]
+    plt.text(i[0],i[1],index,font_size=4)
     for j in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
       for k in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
         img_open[i[0]+j][i[1]+k] = [255, 255/len(params)*(index+1), 0]
