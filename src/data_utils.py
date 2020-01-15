@@ -475,6 +475,8 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
   #Even entries
   y = a[::2]
 
+  from pdb import set_trace as st
+  st()
   plt.plot(x, y)
   plt.savefig('sample2d.png')
 
