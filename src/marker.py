@@ -89,7 +89,7 @@ def markup_3dhp():
   plt.savefig("Sample1.png")
   return
 
-markup()
+markup_3dhp()
 
 
 
