@@ -510,7 +510,7 @@ def sample():
     exidx = exidx + 1
     subplot_idx = subplot_idx + 3
 
-  plt.show()
+  plt.savefig("sample.png")
 
 def main(_):
   if FLAGS.sample:
