@@ -63,7 +63,7 @@ def markup():
   img_open = plt.imread('/mnt/lustre/xingyifei/to_ptx/images/'+img)
   img_open = img_open.copy()
   for i in params:
-    img_open[i[0]][i[1]] = [0, 0, 0]
+    img_open[i[0]][i[1]] = [255., 255., 0]
 
   plt.imshow(img_open)
   plt.savefig("Sample")
