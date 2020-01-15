@@ -428,7 +428,7 @@ def read_2d_predictions( actions, train_names, val_names, train_dir, val_dir ):
 
   print("SAMPLE DATA")
   print("############")
-  print(train_set.values()[0])
+  print(list(train_set.values())[0])
 
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
@@ -465,7 +465,7 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
 
   print("SAMPLE DATA")
   print("############")
-  print(train_set.values()[0])
+  print(list(train_set.values())[0])
 
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
@@ -516,7 +516,7 @@ def read_3d_data( actions, train_names, val_names, train_dir, val_dir, camera_fr
 
   print("SAMPLE DATA")
   print("############")
-  print(train_set.values()[0])
+  print(list(train_set.values())[0])
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use, train_root_positions, test_root_positions
 
 
