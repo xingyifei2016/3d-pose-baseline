@@ -379,7 +379,7 @@ def train():
 
       else:
 
-        n_joints = 17 if not(FLAGS.predict_14) else 14
+        n_joints = 16 if not(FLAGS.predict_14) else 14
         encoder_inputs, decoder_outputs = model.get_all_batches( test_set_2d, test_set_3d, FLAGS.camera_frame, training=False)
 
         total_err, joint_err, step_time, loss = evaluate_batches( sess, model,
@@ -457,7 +457,7 @@ def evaluate_batches( sess, model,
     loss
   """
 
-  n_joints = 17 if not(FLAGS.predict_14) else 14
+  n_joints = 16 if not(FLAGS.predict_14) else 14
   nbatches = len( encoder_inputs )
 
   # Loop through test examples
@@ -472,6 +472,10 @@ def evaluate_batches( sess, model,
     dp = 1.0 # dropout keep probability is always 1 at test time
     step_loss, loss_summary, poses3d = model.step( sess, enc_in, dec_out, dp, isTraining=False )
     loss += step_loss
+
+    print(enc_in.shape)
+    print(dec_out.shape)
+    print(poses3d.shape)
 
 
     # denormalize
@@ -491,7 +495,7 @@ def evaluate_batches( sess, model,
         _, Z, T, b, c = procrustes.compute_similarity_transform(gt,out,compute_optimal_scale=True)
         out = (b*out.dot(T))+c
 
-        poses3d[j,:] = np.reshape(out,[-1,17*3] ) if not(FLAGS.predict_14) else np.reshape(out,[-1,14*3] )
+        poses3d[j,:] = np.reshape(out,[-1,16*3] ) if not(FLAGS.predict_14) else np.reshape(out,[-1,14*3] )
 
     # Compute Euclidean distance error per joint
     sqerr = (poses3d - dec_out)**2 # Squared error between prediction and expected output
@@ -648,7 +652,6 @@ def sample():
 
 def main(_):
   mpi()
-  exit()
   if FLAGS.sample:
     sample()
   else:
