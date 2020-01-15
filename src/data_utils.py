@@ -493,6 +493,9 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #According to doc, this should be normalized but isn't
   #Shape (2929, 17, 3)
   test_set3d = inputs['univ_annot3']
+
+  from pdb import set_trace as st 
+  st()
   test_set3d = test_set3d[:, M, :]
 
   #Get rid of the first joint, subtract from rest
