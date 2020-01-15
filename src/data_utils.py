@@ -500,8 +500,10 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   data_mean3d = np.mean(test_set3d, axis=0)
   data_std3d  =  np.std(test_set3d, axis=0)
 
-  from pdb import set_trace as st 
-  st()
+  #Get rid of the first joint, subtract from rest
+  first_joint3d = np.expand_dims(test_set3d[:, 0, :], axis=1)
+  test_set3d = (test_set3d - first_joint3d)[:, 1:, :]
+
   #If transform points, do procrustes transform
   if do_transform:
     _, Z, T, b, c = procrustes.compute_similarity_transform(H36M_mean3d.reshape(-1, 3), data_mean3d, compute_optimal_scale=True)
@@ -509,9 +511,6 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
     data_mean3d = np.mean(test_set3d, axis=0)
     data_std3d  =  np.std(test_set3d, axis=0)
 
-  #Get rid of the first joint, subtract from rest
-  first_joint3d = np.expand_dims(test_set3d[:, 0, :], axis=1)
-  test_set3d = (test_set3d - first_joint3d)[1:, :, :]
 
   data_test3d = np.divide(test_set3d - data_mean3d, data_std3d)
 
@@ -521,7 +520,7 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
 
   #Get rid of the first joint, subtract from rest
   first_joint2d = np.expand_dims(test_set2d[:, 0, :], axis=1)
-  test_set2d = (test_set2d - first_joint2d)[1:, :, :]
+  test_set2d = (test_set2d - first_joint2d)[:, 1:, :]
 
   #Calculate 2d statistic
   data_mean2d = np.mean(test_set2d, axis=0)
