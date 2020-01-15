@@ -79,18 +79,22 @@ def markup_3dhp():
   img_open = plt.imread('/mnt/lustre/xingyifei/test_3dhp/test_images_full/'+img)
   img_open = np.transpose(img_open.copy(), (1, 0, 2))
 
+
+  index = 0
+
+
   for i in params:
     img_open[i[0]][i[1]] = [255, 255, 0]
     for j in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
       for k in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
-        img_open[i[0]+j][i[1]+k] = [255, 0, 0]
+        img_open[i[0]+j][i[1]+k] = [255, 255/len(params)*(index+1), 0]
+
+    index +=1 
 
 
 
 
   plt.imshow(img_open)
-  for i in range(len(params)):
-    plt.text(params[i][0], params[i][0], 'This is the '+str(i)+' th joint position', fontsize=12)
 
   plt.savefig("Sample1.png")
   return
