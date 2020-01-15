@@ -500,6 +500,8 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   data_mean3d = np.mean(test_set3d, axis=0)
   data_std3d  =  np.std(test_set3d, axis=0)
 
+  from pdb import set_trace as st 
+  st()
   #If transform points, do procrustes transform
   if do_transform:
     _, Z, T, b, c = procrustes.compute_similarity_transform(H36M_mean3d.reshape(-1, 3), data_mean3d, compute_optimal_scale=True)
