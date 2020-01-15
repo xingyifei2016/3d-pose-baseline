@@ -496,10 +496,6 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
 
   test_set3d = test_set3d[:][:, M, :]
 
-  #Get rid of the first joint, subtract from rest
-  first_joint3d = np.expand_dims(test_set3d[:, 0, :], axis=1)
-  test_set3d = (test_set3d - first_joint3d)[1:, :, :]
-
   #Calculate 3d statistics
   data_mean3d = np.mean(test_set3d, axis=0)
   data_std3d  =  np.std(test_set3d, axis=0)
@@ -510,6 +506,10 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
     test_set3d = (b * test_set3d.dot(T)) + c
     data_mean3d = np.mean(test_set3d, axis=0)
     data_std3d  =  np.std(test_set3d, axis=0)
+
+  #Get rid of the first joint, subtract from rest
+  first_joint3d = np.expand_dims(test_set3d[:, 0, :], axis=1)
+  test_set3d = (test_set3d - first_joint3d)[1:, :, :]
 
   data_test3d = np.divide(test_set3d - data_mean3d, data_std3d)
 
