@@ -85,7 +85,13 @@ def markup_3dhp():
       for k in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
         img_open[i[0]+j][i[1]+k] = [255, 0, 0]
 
+
+
+
   plt.imshow(img_open)
+  for i in range(len(params)):
+    plt.text(params[i][0], params[i][0], 'This is the '+str(i)+' th joint position', fontsize=12)
+
   plt.savefig("Sample1.png")
   return
 
