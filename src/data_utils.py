@@ -518,9 +518,8 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   test_set2d = inputs['annot_2d']
   test_set2d = test_set2d[:][:, M, :]
 
-  #Get rid of the first joint, subtract from rest
-  first_joint2d = np.expand_dims(test_set2d[:, 0, :], axis=1)
-  test_set2d = (test_set2d - first_joint2d)[:, 1:, :]
+  #Get rid of the first joint
+  test_set2d = test_set2d[:, 1:, :]
 
   #Calculate 2d statistic
   data_mean2d = np.mean(test_set2d, axis=0)
