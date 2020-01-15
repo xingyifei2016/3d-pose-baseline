@@ -77,7 +77,7 @@ def markup_3dhp():
   img = list(open("/mnt/lustre/xingyifei/test_3dhp/test_sub_images.txt", "r"))[0][:-1]
   params = h5py.File('/mnt/lustre/xingyifei/test_3dhp/annotTest.h5', 'r')['annot_2d'][0].astype(int)
   img_open = plt.imread('/mnt/lustre/xingyifei/test_3dhp/test_images_full/'+img)
-  img_open = img_open.copy().T
+  img_open = np.transpose(img_open.copy(), (1, 0, 2))
 
   for i in params:
     img_open[i[0]][i[1]] = [255, 255, 0]
