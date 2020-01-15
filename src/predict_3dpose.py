@@ -157,7 +157,7 @@ def mpi():
   print( "done reading and normalizing data." )
 
   # Load MPI data for testing:
-  mpi_test3d, mpi_mean3d, mpi_std3d, mpi_test2d, mpi_mean2d, mpi_std2d = data_utils.read_mpi('/mnt/lustre/xingyifei/test_3dhp/annotTest.h5', False, data_mean_2d, data_mean_3d)
+  mpi_test3d, mpi_mean3d, mpi_std3d, mpi_test2d, mpi_mean2d, mpi_std2d = data_utils.read_mpi('/mnt/lustre/xingyifei/test_3dhp/annotTest.h5', True, data_mean_2d, data_mean_3d)
 
   # Avoid using the GPU if requested
   device_count = {"GPU": 0} if FLAGS.use_cpu else {"GPU": 1}
