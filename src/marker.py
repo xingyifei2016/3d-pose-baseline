@@ -80,9 +80,9 @@ def markup_3dhp():
   img_open = img_open.copy()
 
   for i in params:
-    img_open[i[1]][i[0]] = [255, 255, 0]
-    for j in [-2,-1, 1,2]:
-      for k in [-2,-1, 1,2]:
+    img_open[i[0]][i[1]] = [255, 255, 0]
+    for j in [-2,-1, 1,2, 3, 4, 5]:
+      for k in [-2,-1, 1,2, 3, 4, 5]:
         img_open[i[0]+j][i[1]+k] = [255, 0, 0]
 
   plt.imshow(img_open)
