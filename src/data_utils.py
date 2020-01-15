@@ -486,7 +486,7 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
 def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #3dhp to H36M
   M = np.array([10,8,11,12,13,14,15,16,4,5,6,1,2,3,0,7,9])
-
+  N = np.array([9,8,13,14,15,12,11,10,3,4,5,2,1,0,6,7,16]) 
   # Loads 3dhp data
   inputs = h5py.File(data_path, 'r')
 
@@ -494,11 +494,12 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #Shape (2929, 17, 3)
   test_set3d = inputs['univ_annot3']
 
-  test_set3d = test_set3d[:][:, M, :]
+  # test_set3d = test_set3d[:][:, M, :]
+  test_set3d = test_set3d[:][:, N, :][:, :-1, :]
 
-  #Get rid of the first joint, subtract from rest
-  first_joint3d = np.expand_dims(test_set3d[:, 0, :], axis=1)
-  test_set3d = (test_set3d - first_joint3d)[:, 1:, :]
+  # #Get rid of the first joint, subtract from rest
+  # first_joint3d = np.expand_dims(test_set3d[:, 0, :], axis=1)
+  # test_set3d = (test_set3d - first_joint3d)[:, 1:, :]
 
   #Calculate 3d statistics
   data_mean3d = np.mean(test_set3d, axis=0)
