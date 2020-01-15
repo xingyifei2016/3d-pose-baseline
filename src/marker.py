@@ -57,10 +57,26 @@ SH_NAMES[13] = 'LShoulder'
 SH_NAMES[14] = 'LElbow'
 SH_NAMES[15] = 'LWrist'
 
-def markup():
+def markup_36m():
   img = list(open("/mnt/lustre/xingyifei/to_ptx/train_images.txt", "r"))[0][:-1]
   params = h5py.File('/mnt/lustre/xingyifei/to_ptx/train.h5', 'r')['GT2d'][0].astype(int)
   img_open = plt.imread('/mnt/lustre/xingyifei/to_ptx/images/'+img)
+  img_open = img_open.copy()
+
+  for i in params:
+    img_open[i[1]][i[0]] = [255, 255, 0]
+    for j in [-1, 1]:
+      for k in [-1, 1]:
+        img_open[i[0]+j][i[1]+k] = [255, 255, 0]
+
+  plt.imshow(img_open)
+  plt.savefig("Sample1.png")
+  return
+
+def markup_3dhp():
+  img = list(open("/mnt/lustre/xingyifei/test_3dhp/test_sub_images.txt", "r"))[0][:-1]
+  params = h5py.File('/mnt/lustre/xingyifei/test_3dhp/annotTest.h5', 'r')['annot_2d'][0].astype(int)
+  img_open = plt.imread('/mnt/lustre/xingyifei/test_3dhp/test_images_full/'+img)
   img_open = img_open.copy()
 
   for i in params:
