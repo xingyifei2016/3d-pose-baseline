@@ -187,12 +187,12 @@ def mpi():
 
     #Process inputs to batches
     n = len(mpi_test3d)
-    n_extra  = n % self.batch_size
+    n_extra  = n % model.batch_size
     if n_extra > 0:  # Otherwise examples are already a multiple of batch size
       encoder_inputs  = mpi_test2d[:-n_extra, :, :].reshape(-1, 32)
       decoder_outputs = mpi_test3d[:-n_extra, :, :].reshape(-1, 48)
 
-    n_batches = n // self.batch_size
+    n_batches = n // model.batch_size
     encoder_inputs  = np.split( encoder_inputs, n_batches )
     decoder_outputs = np.split( decoder_outputs, n_batches )
 
