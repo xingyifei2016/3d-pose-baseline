@@ -398,9 +398,11 @@ def sample():
   rcams = cameras.load_cameras(FLAGS.cameras_path, SUBJECT_IDS)
 
   # Load 3d data and load (or create) 2d projections
-  train_set_3d, test_set_3d, data_mean_3d, data_std_3d, dim_to_ignore_3d, dim_to_use_3d, train_root_positions, test_root_positions = data_utils.read_3d_data(
-    actions, FLAGS.data_dir, FLAGS.camera_frame, rcams, FLAGS.predict_14 )
 
+  train_set_3d, test_set_3d, data_mean_3d, data_std_3d, dim_to_ignore_3d, dim_to_use_3d, train_root_positions, test_root_positions = data_utils.read_3d_data(
+    actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', FLAGS.camera_frame, rcams, FLAGS.predict_14 )
+
+  # Read stacked hourglass 2D predictions if use_sh, otherwise use groundtruth 2D projections
   if FLAGS.use_sh:
     train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.read_2d_predictions(actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5')
   else:
