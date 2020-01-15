@@ -63,11 +63,17 @@ def markup_36m():
   img_open = plt.imread('/mnt/lustre/xingyifei/to_ptx/images/'+img)
   img_open = img_open.copy()
 
+  index = 0
+
+
   for i in params:
     img_open[i[0]][i[1]] = [255, 255, 0]
-    for j in [-1, 1]:
-      for k in [-1, 1]:
-        img_open[i[0]+j][i[1]+k] = [255, 255, 0]
+    plt.text(i[0],i[1],index,fontsize=10)
+    for j in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
+      for k in [-5, -4, -3, -2,-1, 1,2, 3, 4, 5]:
+        img_open[i[0]+j][i[1]+k] = [255, 255/len(params)*(index+1), 0]
+
+    index +=1 
 
   plt.imshow(img_open)
   plt.savefig("Sample1.png")
@@ -100,7 +106,7 @@ def markup_3dhp():
   plt.savefig("Sample1.png")
   return
 
-markup_3dhp()
+markup_36m()
 
 
 
