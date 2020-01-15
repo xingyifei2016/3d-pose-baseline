@@ -494,9 +494,7 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #Shape (2929, 17, 3)
   test_set3d = inputs['univ_annot3']
 
-  from pdb import set_trace as st 
-  st()
-  test_set3d = test_set3d[:, M, :]
+  test_set3d = test_set3d[:][:, M, :]
 
   #Get rid of the first joint, subtract from rest
   first_joint3d = test_set3d[:, 0, :]
@@ -517,7 +515,7 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
 
   #Shape (2929, 17, 2)
   test_set2d = inputs['annot_2d']
-  test_set2d = test_set2d[:, M, :]
+  test_set2d = test_set2d[:][:, M, :]
 
   #Get rid of the first joint, subtract from rest
   first_joint2d = test_set2d[:, 0, :]
