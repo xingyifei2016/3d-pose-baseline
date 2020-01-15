@@ -476,7 +476,7 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
   y = a[::2]
 
   plt.plot(x, y)
-  plt.savefig('sample2d')
+  plt.savefig('sample2d.png')
 
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
