@@ -387,6 +387,8 @@ def train():
           data_mean_2d, data_std_2d, dim_to_use_2d, dim_to_ignore_2d,
           current_step, encoder_inputs, decoder_outputs, current_epoch )
 
+        print(len(joint_err))
+
         print("=============================\n"
               "Step-time (ms):      %.4f\n"
               "Val loss avg:        %.4f\n"
@@ -651,7 +653,6 @@ def sample():
   plt.savefig("sample.png")
 
 def main(_):
-  mpi()
   if FLAGS.sample:
     sample()
   else:
