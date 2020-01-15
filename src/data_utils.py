@@ -494,7 +494,7 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #Shape (2929, 17, 3)
   test_set3d = inputs['univ_annot3']
 
-  test_set3d = test_set3d[:][:, M, :]
+  # test_set3d = test_set3d[:][:, M, :]
   # test_set3d = test_set3d[:][:, N, :][:, :-1, :]
 
   #Get rid of the first joint, subtract from rest
