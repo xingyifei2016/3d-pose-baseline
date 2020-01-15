@@ -61,7 +61,7 @@ def markup():
   img = list(open("/mnt/lustre/xingyifei/to_ptx/train_images.txt", "r"))[0][:-1]
   params = h5py.File('/mnt/lustre/xingyifei/to_ptx/train.h5', 'r')['GT2d'][0].astype(int)
   img_open = plt.imread('/mnt/lustre/xingyifei/to_ptx/images/'+img)
-  img_open.setflags(write=1)
+  img_open = img_open.copy()
   for i in params:
     img_open[i[0]][i[1]] = [0, 0, 0]
 
