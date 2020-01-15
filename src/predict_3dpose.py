@@ -136,6 +136,135 @@ def create_model( session, actions, batch_size ):
 
   return model
 
+def mpi():
+  actions = data_utils.define_actions( FLAGS.action )
+
+  number_of_actions = len( actions )
+
+  # Load camera parameters
+  SUBJECT_IDS = [1,5,6,7,8,9,11]
+  rcams = cameras.load_cameras(FLAGS.cameras_path, SUBJECT_IDS)
+
+  # Load 3d data and load (or create) 2d projections
+  train_set_3d, test_set_3d, data_mean_3d, data_std_3d, dim_to_ignore_3d, dim_to_use_3d, train_root_positions, test_root_positions = data_utils.read_3d_data(
+    actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', FLAGS.camera_frame, rcams, FLAGS.predict_14 )
+
+  # Read stacked hourglass 2D predictions if use_sh, otherwise use groundtruth 2D projections
+  if FLAGS.use_sh:
+    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.read_2d_predictions(actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5')
+  else:
+    train_set_2d, test_set_2d, data_mean_2d, data_std_2d, dim_to_ignore_2d, dim_to_use_2d = data_utils.create_2d_data( actions, FLAGS.data_dir+'train_images.txt', FLAGS.data_dir+'valid_images.txt', FLAGS.data_dir+'train.h5', FLAGS.data_dir+'valid.h5', rcams )
+  print( "done reading and normalizing data." )
+
+  # Load MPI data for testing:
+  mpi_test3d, mpi_mean3d, mpi_std3d, mpi_test2d, mpi_mean2d, mpi_std2d = data_utils.read_mpi('/mnt/lustre/xingyifei/test_3dhp/annotTest.h5', True, data_mean_3d, data_mean_2d)
+
+  # Avoid using the GPU if requested
+  device_count = {"GPU": 0} if FLAGS.use_cpu else {"GPU": 1}
+  with tf.Session(config=tf.ConfigProto(
+    device_count=device_count,
+    allow_soft_placement=True )) as sess:
+
+    # === Create the model ===
+    print("Creating %d bi-layers of %d units." % (FLAGS.num_layers, FLAGS.linear_size))
+    model = create_model( sess, actions, FLAGS.batch_size )
+    model.train_writer.add_graph( sess.graph )
+    print("Model created")
+
+    #=== This is the training loop ===
+    step_time, loss, val_loss = 0.0, 0.0, 0.0
+    current_step = 0 if FLAGS.load <= 0 else FLAGS.load + 1
+    previous_losses = []
+
+    step_time, loss = 0, 0
+    current_epoch = 0
+    log_every_n_batches = 100
+
+    # === Testing after this epoch ===
+    isTraining = False
+
+    n_joints = 16 if not(FLAGS.predict_14) else 14
+
+    #Process inputs to batches
+    n = len(mpi_test3d)
+    n_extra  = n % self.batch_size
+    if n_extra > 0:  # Otherwise examples are already a multiple of batch size
+      encoder_inputs  = mpi_test2d[:-n_extra, :, :].reshape(-1, 32)
+      decoder_outputs = mpi_test3d[:-n_extra, :, :].reshape(-1, 48)
+
+    n_batches = n // self.batch_size
+    encoder_inputs  = np.split( encoder_inputs, n_batches )
+    decoder_outputs = np.split( decoder_outputs, n_batches )
+
+    nbatches = len( encoder_inputs )
+
+    # Loop through test examples
+    all_dists, start_time, loss = [], time.time(), 0.
+    log_every_n_batches = 100
+    for i in range(nbatches):
+
+      if current_epoch > 0 and (i+1) % log_every_n_batches == 0:
+        print("Working on test epoch {0}, batch {1} / {2}".format( current_epoch, i+1, nbatches) )
+
+      enc_in, dec_out = encoder_inputs[i], decoder_outputs[i]
+      dp = 1.0 # dropout keep probability is always 1 at test time
+      step_loss, loss_summary, poses3d = model.step( sess, enc_in, dec_out, dp, isTraining=False )
+      loss += step_loss
+
+
+      # denormalize
+      enc_in  = (enc_in.reshape(-1, 16, 2) * mpi_std2d + mpi_mean2d).reshape(-1, 32)
+      dec_out = (dec_out.reshape(-1, 16, 3) * mpi_std3d + mpi_mean3d).reshape(-1, 48)
+      poses3d = (poses3d.reshape(-1, 16, 3) * mpi_std3d + mpi_mean3d).reshape(-1, 48)
+
+      assert dec_out.shape[0] == FLAGS.batch_size
+      assert poses3d.shape[0] == FLAGS.batch_size
+
+      if FLAGS.procrustes:
+        # Apply per-frame procrustes alignment if asked to do so
+        for j in range(FLAGS.batch_size):
+          gt  = np.reshape(dec_out[j,:],[-1,3])
+          out = np.reshape(poses3d[j,:],[-1,3])
+          _, Z, T, b, c = procrustes.compute_similarity_transform(gt,out,compute_optimal_scale=True)
+          out = (b*out.dot(T))+c
+
+          poses3d[j,:] = np.reshape(out,[-1,16*3] ) if not(FLAGS.predict_14) else np.reshape(out,[-1,14*3] )
+
+      # Compute Euclidean distance error per joint
+      sqerr = (poses3d - dec_out)**2 # Squared error between prediction and expected output
+      dists = np.zeros( (sqerr.shape[0], n_joints) ) # Array with L2 error per joint in mm
+      dist_idx = 0
+      for k in np.arange(0, n_joints*3, 3):
+        # Sum across X,Y, and Z dimenstions to obtain L2 distance
+        dists[:,dist_idx] = np.sqrt( np.sum( sqerr[:, k:k+3], axis=1 ))
+        dist_idx = dist_idx + 1
+
+      all_dists.append(dists)
+      assert sqerr.shape[0] == FLAGS.batch_size
+
+    step_time = (time.time() - start_time) / nbatches
+    loss      = loss / nbatches
+
+    all_dists = np.vstack( all_dists )
+
+    # Error per joint and total for all passed batches
+    joint_err = np.mean( all_dists, axis=0 )
+    total_err = np.mean( all_dists )
+
+    print("=============================\n"
+              "Step-time (ms):      %.4f\n"
+              "Val loss avg:        %.4f\n"
+              "Val error avg (mm):  %.2f\n"
+              "=============================" % ( 1000*step_time, loss, total_err ))
+
+    for i in range(n_joints):
+      # 6 spaces, right-aligned, 5 decimal places
+      print("Error in joint {0:02d} (mm): {1:>5.2f}".format(i+1, joint_err[i]))
+    print("=============================")
+
+
+
+
 def train():
   """Train a linear model for 3d pose estimation"""
 
@@ -518,6 +647,8 @@ def sample():
   plt.savefig("sample.png")
 
 def main(_):
+  mpi()
+  exit()
   if FLAGS.sample:
     sample()
   else:

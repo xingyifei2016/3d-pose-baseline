@@ -14,6 +14,9 @@ import glob
 import copy
 import procrustes
 
+#3dhp to H36M
+3dhp_36m = [10, 8, 11, 12, 13, 14, 15, 16, 4, 5, 6, 1, 2, 3, 0, 7, 9]
+
 # Human3.6m IDs for training and testing
 TRAIN_SUBJECTS = [1,5,6,7,8]
 TEST_SUBJECTS  = [9,11]
@@ -475,44 +478,62 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
   #Even entries
   y = a[::2]
 
-  from pdb import set_trace as st
-  st()
   plt.plot(x, y)
   plt.savefig('sample2d.png')
 
   return train_set, test_set, data_mean, data_std, dim_to_ignore, dim_to_use
 
 
-# def read_3d_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
-#   # Loads 3dhp data
-#   3dhp = h5py.File(data_path, 'r')
+def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
+  # Loads 3dhp data
+  3dhp = h5py.File(data_path, 'r')
 
-#   #According to doc, this should be normalized but isn't
-#   #Shape (2929, 17, 3)
-#   test_set3d = 3dhp['univ_annot3']
+  #According to doc, this should be normalized but isn't
+  #Shape (2929, 17, 3)
+  test_set3d = 3dhp['univ_annot3']
+  test_set3d = test_set3d[:, 3dhp_36m, :]
 
-#   #Get rid of the first joint, subtract from rest
-#   first_joint3d = test_set3d[:, 0, :]
-#   test_set3d = (test_set3d - first_joint3d)[1:, :, :]
+  #Get rid of the first joint, subtract from rest
+  first_joint3d = test_set3d[:, 0, :]
+  test_set3d = (test_set3d - first_joint3d)[1:, :, :]
 
-#   #Calculate 3d statistics
-#   data_mean3d = np.mean(test_set3d, axis=0)
-#   data_std3d  =  np.std(test_set3d, axis=0)
+  #Calculate 3d statistics
+  data_mean3d = np.mean(test_set3d, axis=0)
+  data_std3d  =  np.std(test_set3d, axis=0)
 
-#   #If transform points, do procrustes transform
-#   if do_transform:
-#     _, Z, T, b, c = util.compute_similarity_transform(H36M_mean3d, data_mean3d, compute_optimal_scale=True)
+  #If transform points, do procrustes transform
+  if do_transform:
+    _, Z, T, b, c = procrustes.compute_similarity_transform(H36M_mean3d, data_mean3d, compute_optimal_scale=True)
+    test_set3d = (b * test_set3d.dot(T)) + c
+    data_mean3d = np.mean(test_set3d, axis=0)
+    data_std3d  =  np.std(test_set3d, axis=0)
 
-#   #Shape (2929, 17, 2)
-#   test_set2d = 3dhp['annot_2d']
+  data_test3d = np.divide(test_set3d - data_mean3d, data_std3d)
 
-#   #Get rid of the first joint, subtract from rest
-#   first_joint2d = test_set2d[:, 0, :]
-#   test_set2d = (test_set2d - first_joint2d)[1:, :, :]
+  #Shape (2929, 17, 2)
+  test_set2d = 3dhp['annot_2d']
+  test_set2d = test_set2d[:, 3dhp_36m, :]
 
-#   #Calculate 2d statistic
-#   data_mean = np.mean(test_set2d, axis=0)
-#   data_std  =  np.std(test_set2d, axis=0)
+  #Get rid of the first joint, subtract from rest
+  first_joint2d = test_set2d[:, 0, :]
+  test_set2d = (test_set2d - first_joint2d)[1:, :, :]
+
+  #Calculate 2d statistic
+  data_mean2d = np.mean(test_set2d, axis=0)
+  data_std2d  =  np.std(test_set2d, axis=0)
+
+  #If transform points, do procrustes transform
+  if do_transform:
+    _, Z, T, b, c = procrustes.compute_similarity_transform(H36M_mean2d, data_mean2d, compute_optimal_scale=True)
+    test_set2d = (b * test_set2d.dot(T)) + c
+    data_mean2d = np.mean(test_set2d, axis=0)
+    data_std2d  =  np.std(test_set2d, axis=0)
+
+  data_test2d = np.divide(test_set2d - data_mean2d, data_std2d)
+
+  return data_test3d, data_mean3d, data_std3d, data_test2d, data_mean2d, data_std2d
+
+
 
 
 
