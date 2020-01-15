@@ -425,6 +425,9 @@ def sample():
       # keys should be the same if 3d is in camera coordinates
       key3d = key2d 
 
+      from pdb import set_trace as st 
+      st()
+
       enc_in  = test_set_2d[ key2d ]
       dec_out = test_set_3d[ key3d ]
 
