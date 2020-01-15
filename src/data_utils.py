@@ -14,8 +14,7 @@ import glob
 import copy
 import procrustes
 
-#3dhp to H36M
-3DHP_36M = [10, 8, 11, 12, 13, 14, 15, 16, 4, 5, 6, 1, 2, 3, 0, 7, 9]
+
 
 # Human3.6m IDs for training and testing
 TRAIN_SUBJECTS = [1,5,6,7,8]
@@ -485,6 +484,9 @@ def create_2d_data( actions, train_names, val_names, train_dir, val_dir, rcams )
 
 
 def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
+  #3dhp to H36M
+  3DHP_36M = [10, 8, 11, 12, 13, 14, 15, 16, 4, 5, 6, 1, 2, 3, 0, 7, 9]
+
   # Loads 3dhp data
   3dhp = h5py.File(data_path, 'r')
 
