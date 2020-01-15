@@ -488,11 +488,11 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   M = np.array([10,8,11,12,13,14,15,16,4,5,6,1,2,3,0,7,9])
 
   # Loads 3dhp data
-  3dhp = h5py.File(data_path, 'r')
+  inputs = h5py.File(data_path, 'r')
 
   #According to doc, this should be normalized but isn't
   #Shape (2929, 17, 3)
-  test_set3d = 3dhp['univ_annot3']
+  test_set3d = inputs['univ_annot3']
   test_set3d = test_set3d[:, M, :]
 
   #Get rid of the first joint, subtract from rest
@@ -513,7 +513,7 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   data_test3d = np.divide(test_set3d - data_mean3d, data_std3d)
 
   #Shape (2929, 17, 2)
-  test_set2d = 3dhp['annot_2d']
+  test_set2d = inputs['annot_2d']
   test_set2d = test_set2d[:, M, :]
 
   #Get rid of the first joint, subtract from rest
