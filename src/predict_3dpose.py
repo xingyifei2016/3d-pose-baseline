@@ -261,6 +261,8 @@ def mpi():
 
     PCK_150 = all_dists < 150
 
+    from pdb import set_trace as st 
+    st()
     #AUC Metric
     non_zero = np.count_nonzero(PCK_150, axis=1) * 1.
     zeros = np.ones(non_zero.shape)*len(PCK_150[0]) - non_zero
