@@ -518,11 +518,11 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #Shape (2929, 17, 2)
   test_set2d = inputs['annot_2d']
 
-  N = np.array([9,8,13,14,15,12,11,10,3,4,5,2,1,0,6,7,16]) 
-  test_set2d = test_set2d[:][:, N, :]
+  # N = np.array([9,8,13,14,15,12,11,10,3,4,5,2,1,0,6,7,16]) 
+  # test_set2d = test_set2d[:][:, N, :]
 
   #Get rid of the first joint
-  test_set2d = test_set2d[:, :-1, :] / 2.048
+  test_set2d = test_set2d[:, 1:, :] / 2.048
 
   #Calculate 2d statistic
   data_mean2d = np.mean(test_set2d, axis=0)
