@@ -494,7 +494,7 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   #Shape (2929, 17, 3)
   test_set3d = inputs['univ_annot3']
 
-  # test_set3d = test_set3d[:][:, M, :]
+  test_set3d = test_set3d[:][:, M, :]
   # test_set3d = test_set3d[:][:, N, :][:, :-1, :]
 
   #Get rid of the first joint, subtract from rest
@@ -522,18 +522,18 @@ def read_mpi ( data_path , do_transform , H36M_mean2d, H36M_mean3d ):
   test_set2d = test_set2d[:][:, N, :]
 
   #Get rid of the first joint
-  test_set2d = test_set2d[:, :-1, :]
+  test_set2d = test_set2d[:, :-1, :] / 2.048
 
   #Calculate 2d statistic
   data_mean2d = np.mean(test_set2d, axis=0)
   data_std2d  =  np.std(test_set2d, axis=0)
 
   #If transform points, do procrustes transform
-  if do_transform:
-    _, Z, T, b, c = procrustes.compute_similarity_transform(H36M_mean2d.reshape(-1, 2), data_mean2d, compute_optimal_scale=True)
-    test_set2d = (b * test_set2d.dot(T)) + c
-    data_mean2d = np.mean(test_set2d, axis=0)
-    data_std2d  =  np.std(test_set2d, axis=0)
+  # if do_transform:
+  #   _, Z, T, b, c = procrustes.compute_similarity_transform(H36M_mean2d.reshape(-1, 2), data_mean2d, compute_optimal_scale=True)
+  #   test_set2d = (b * test_set2d.dot(T)) + c
+  #   data_mean2d = np.mean(test_set2d, axis=0)
+  #   data_std2d  =  np.std(test_set2d, axis=0)
 
   data_test2d = np.divide(test_set2d - data_mean2d, data_std2d)
 

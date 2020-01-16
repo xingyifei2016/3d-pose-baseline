@@ -106,6 +106,19 @@ def markup_3dhp():
   plt.savefig("Sample1.png")
   return
 
+def markup_3dhp3d():
+  img = list(open("/mnt/lustre/xingyifei/test_3dhp/test_sub_images.txt", "r"))[0][:-1]
+  params = h5py.File('/mnt/lustre/xingyifei/test_3dhp/annotTest.h5', 'r')['univ_annot3'][0].astype(int)
+
+
+  index = 0
+  for i in params:
+    plt.text(i[0],i[1],index,color='red')
+    index+=1
+
+  plt.savefig("Sample1.png")
+  return
+
 markup_36m()
 
 
