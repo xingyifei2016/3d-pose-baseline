@@ -220,7 +220,7 @@ def mpi():
       assert dec_out.shape[0] == FLAGS.batch_size
       assert poses3d.shape[0] == FLAGS.batch_size
 
-      if True:
+      if FLAGS.procrustes:
         # Apply per-frame procrustes alignment if asked to do so
         for j in range(FLAGS.batch_size):
           gt  = np.reshape(dec_out[j,:],[-1,3])
