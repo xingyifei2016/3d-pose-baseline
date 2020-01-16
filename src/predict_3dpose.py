@@ -81,6 +81,18 @@ summaries_dir = os.path.join( train_dir, "log" ) # Directory for TB summaries
 # To avoid race conditions: https://github.com/tensorflow/tensorflow/issues/7448
 os.system('mkdir -p {}'.format(summaries_dir))
 
+
+# def AUC_metric( gt, pred ):
+#   # AUC metric calculations:
+#   # Inputs: gt, pred of shape (N, 16*3)
+
+def PCK_metric ( gt, pred, threshold=150 ):
+  # PCK Metric calculations
+  # Inputs: gt, pred of shape (N, 16*3)
+
+
+
+
 def create_model( session, actions, batch_size ):
   """
   Create model and initialize it or load its parameters in a session
@@ -247,6 +259,20 @@ def mpi():
 
     all_dists = np.vstack( all_dists )
 
+    PCK_150 = all_dist < 150
+
+    #AUC Metric
+    non_zero = np.count_nonzero(PCK_150, axis=1) * 1.
+    zeros = np.ones(non_zero.shape)*len(PCK_150[0]) - non_zero
+
+    TP = non_zero / len(PCK_150[0])
+    FP = zeros / len(PCK_150[0])
+
+    AUC = (1 + TP - FP) / 2.
+
+    #PCK@150
+    PCK = np.mean(np.mean( PCK_150, axis=1 ))
+
     # Error per joint and total for all passed batches
     joint_err = np.mean( all_dists, axis=0 )
     total_err = np.mean( all_dists )
@@ -257,6 +283,8 @@ def mpi():
               "Val error avg (mm):  %.2f\n"
               "=============================" % ( 1000*step_time, loss, total_err ))
 
+    print("PCK ERROR: "+str(PCK))
+    print("AUC ERROR: "+str(AUC))
     for i in range(n_joints):
       # 6 spaces, right-aligned, 5 decimal places
       print("Error in joint {0:02d} (mm): {1:>5.2f}".format(i+1, joint_err[i]))
