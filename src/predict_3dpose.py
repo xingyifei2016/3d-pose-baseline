@@ -259,7 +259,7 @@ def mpi():
 
     all_dists = np.vstack( all_dists )
 
-    PCK_150 = all_dist < 150
+    PCK_150 = all_dists < 150
 
     #AUC Metric
     non_zero = np.count_nonzero(PCK_150, axis=1) * 1.
