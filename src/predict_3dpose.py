@@ -86,9 +86,9 @@ os.system('mkdir -p {}'.format(summaries_dir))
 #   # AUC metric calculations:
 #   # Inputs: gt, pred of shape (N, 16*3)
 
-def PCK_metric ( gt, pred, threshold=150 ):
-  # PCK Metric calculations
-  # Inputs: gt, pred of shape (N, 16*3)
+# def PCK_metric ( gt, pred, threshold=150 ):
+#   # PCK Metric calculations
+#   # Inputs: gt, pred of shape (N, 16*3)
 
 
 
@@ -269,7 +269,7 @@ def mpi():
     FP = zeros / len(PCK_150[0])
 
     AUC = (1 + TP - FP) / 2.
-
+    AUC = np.mean(AUC)
     #PCK@150
     PCK = np.mean(np.mean( PCK_150, axis=1 ))
 
